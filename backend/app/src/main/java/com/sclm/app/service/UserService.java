@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,11 +41,17 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public ResponseEntity<?> verifyUser(String email, String phoneNum, String password) {
-        if((userRepository.existsByEmail(email)) || (phoneNum != null && userRepository.existsByPhoneNumber(phoneNum))) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> verifyUser(User user) {
+//        if((userRepository.existsByEmail(email)) || (phoneNum != null && userRepository.existsByPhoneNumber(phoneNum))) {
+//            return new ResponseEntity<>(HttpStatus.OK);
+//        }
+//        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+//        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+//        if(authentication.isAuthenticated())
+//            return jwtService.generateToken(user.getUsername());
+//        return "Fail";
+        return new ResponseEntity<>("Successfully logged in", HttpStatus.OK);
     }
 
     @Transactional

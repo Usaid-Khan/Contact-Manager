@@ -45,9 +45,10 @@ public class User {
     private LocalDateTime updatedAt;
 
     //informational
-    private boolean enabled = false;
-    private boolean emailVerified = false;
-    private boolean phoneVerified = false;
-    private Providers provider = Providers.SELF;
-    private String providerUserId;
+//    @Getter(value = AccessLevel.NONE)
+//    private boolean enabled = true;
+//    private boolean emailVerified = false;
+//    private boolean phoneVerified = false;
+//    private Providers provider = Providers.SELF;
+//    private String providerUserId;
 }
