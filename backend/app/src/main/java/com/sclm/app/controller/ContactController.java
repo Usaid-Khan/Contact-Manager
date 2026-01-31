@@ -1,37 +1,48 @@
 package com.sclm.app.controller;
 
 import com.sclm.app.entity.Contact;
+import com.sclm.app.service.ContactService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/contacts")
 public class ContactController {
-    @PostMapping("/{username}")
-    public ResponseEntity<Object> createContact(@RequestBody Contact contact, @PathVariable String username) {
-        return new ResponseEntity<>(HttpStatus.OK);
+    @Autowired
+    private ContactService contactService;
+
+    @PostMapping("/create-contact")
+    public ResponseEntity<?> createContact(@RequestBody Contact contact) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return contactService.createContact(auth.getName(), contact);
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<?> getAllContactsOfUser(@PathVariable String username) {
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("/all-contacts")
+    public ResponseEntity<?> getAllContactsOfUser(Pageable pageable) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return contactService.getAllContacts(auth.getName(), pageable);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getContactById(@PathVariable Long id) {
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("/{contactId}")
+    public ResponseEntity<?> getContactById(@PathVariable Long contactId) {
+        return contactService.getContactById(contactId);
     }
 
-    @PutMapping("/{username}/{id}")
-    public ResponseEntity<?> updateContact(@PathVariable Long id, @RequestBody Contact newContact, @PathVariable String userName) {
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PutMapping("/{contactId}")
+    public ResponseEntity<?> updateContact(@RequestBody Contact newContact, @PathVariable Long contactId) {
+        return contactService.updateContact(newContact, contactId);
     }
 
-    @DeleteMapping("/{username}/{id}")
-    public ResponseEntity<?> deleteContact(@PathVariable Long id, @PathVariable String username) {
-        return new ResponseEntity<>(HttpStatus.OK);
+    @DeleteMapping("/{contactId}")
+    public ResponseEntity<?> deleteContact(@PathVariable Long contactId) {
+        return contactService.deleteContact(contactId);
     }
 
     @GetMapping("/search/{title}")
@@ -42,5 +53,10 @@ public class ContactController {
     @GetMapping("/search/{firstName}/{lastName}")
     public ResponseEntity<?> searchContactByName(@PathVariable String firstName, @PathVariable String lastName) {
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> searchContacts(@RequestParam String searchTerm, Pageable pageable) {
+        return contactService.searchContacts(searchTerm, pageable);
     }
 }

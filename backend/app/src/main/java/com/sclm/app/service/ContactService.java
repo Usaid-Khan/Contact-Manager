@@ -5,11 +5,15 @@ import com.sclm.app.entity.EmailAddress;
 import com.sclm.app.entity.PhoneNumber;
 import com.sclm.app.entity.User;
 import com.sclm.app.repository.ContactRepository;
+import com.sclm.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +26,13 @@ public class ContactService {
     private ContactRepository contactRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional
-    public ResponseEntity<?> createContact(Long userId, Contact contact) {
-        User user = userService.findById(userId);
+    public ResponseEntity<?> createContact(String userMail, Contact contact) {
+        User user = userRepository.findByEmail(userMail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not exists"));
 
         Contact newContact = Contact.builder()
                 .firstName(contact.getFirstName())
@@ -62,13 +69,21 @@ public class ContactService {
 
         Contact savedContact = contactRepository.save(newContact);
 
-        return new ResponseEntity<>(savedContact, HttpStatus.OK);
+        return new ResponseEntity<>("Contact Saved", HttpStatus.CREATED);
     }
 
     @Transactional(readOnly = true)
-    public Page<Contact> getAllContacts(Long userId, Pageable pageable) {
-        Page<Contact> contacts = contactRepository.findByUserId(userId, pageable);
-        return contacts;
+    public ResponseEntity<?> getAllContacts(String userMail, Pageable pageable) {
+        User user = userRepository.findByEmail(userMail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not exists"));
+
+        Page<Contact> contacts = contactRepository.findByUserId(user.getId(), pageable);
+
+        if(contacts.getNumberOfElements() == 0) {
+            return new ResponseEntity<>("You don't have any contacts yet", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(contacts, HttpStatus.FOUND);
     }
 
     @Transactional(readOnly = true)
@@ -78,12 +93,16 @@ public class ContactService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getContactById(Long userId, Long contactId) {
+    public ResponseEntity<?> getContactById(Long contactId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = userRepository.findByEmail(auth.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User does not login or exists"));
+
         Contact contact = contactRepository.findById(contactId)
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
 
         // Check if contact belongs to user
-        if(!contact.getUser().getId().equals(userId)) {
+        if(!contact.getUser().getId().equals(currentUser.getId())) {
             throw new RuntimeException("You don't have permission to access this contact");
         }
 
@@ -91,12 +110,16 @@ public class ContactService {
     }
 
     @Transactional
-    public ResponseEntity<?> updateContact(Long userId, Long contactId, Contact newContact) {
+    public ResponseEntity<?> updateContact(Contact newContact, Long contactId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = userRepository.findByEmail(auth.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User does not login or exists"));
+
         Contact contact = contactRepository.findById(contactId)
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
 
         // Check ownership
-        if(!contact.getUser().getId().equals(userId)) {
+        if(!contact.getUser().getId().equals(currentUser.getId())) {
             throw new RuntimeException("You don't have permission to update this contact");
         }
 
@@ -118,7 +141,7 @@ public class ContactService {
                 EmailAddress email = EmailAddress.builder()
                         .email(singleEmail.getEmail())
                         .type(singleEmail.getType())
-                        .contact(singleEmail.getContact())
+                        .contact(contact)
                         .build();
 
                 contact.getEmailAddresses().add(email);
@@ -132,7 +155,7 @@ public class ContactService {
                 PhoneNumber phone = PhoneNumber.builder()
                         .number(singlePhone.getNumber())
                         .type(singlePhone.getType())
-                        .contact(singlePhone.getContact())
+                        .contact(contact)
                         .build();
 
                 contact.getPhoneNumbers().add(phone);
@@ -145,17 +168,36 @@ public class ContactService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteContact(Long userId, Long contactId) {
+    public ResponseEntity<?> deleteContact(Long contactId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = userRepository.findByEmail(auth.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User does not login or exists"));
+
         Contact contact = contactRepository.findById(contactId)
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
 
         // Check ownership
-        if (!contact.getUser().getId().equals(userId)) {
+        if (!contact.getUser().getId().equals(currentUser.getId())) {
             throw new RuntimeException("You don't have permission to delete this contact");
         }
 
         contactRepository.delete(contact);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("Contact is deleted", HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> searchContacts(String searchTerm, Pageable pageable) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = userRepository.findByEmail(auth.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User does not login or exists"));
+
+        Page<Contact> contacts = contactRepository.searchContacts(currentUser.getId(), searchTerm, pageable);
+
+        if(contacts.getNumberOfElements() == 0) {
+            return new ResponseEntity<>("No such contact exists", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(contacts, HttpStatus.FOUND);
     }
 }

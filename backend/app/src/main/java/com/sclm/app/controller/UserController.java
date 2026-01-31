@@ -16,18 +16,16 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        return userService.registerUser(user);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
-        System.out.println("Successfully logged in");
-        userService.verifyUser(user);
-        return new ResponseEntity<>("Successfully logged in", HttpStatus.OK);
+        return userService.verifyUser(user);
     }
 
-    @PutMapping("/change-password/{password}")
-    public ResponseEntity<?> changePassword(@PathVariable String password) {
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PutMapping("/change-password/{userId}/{password}")
+    public ResponseEntity<?> changePassword(@PathVariable Long userId, @PathVariable String password) {
+        return userService.changePassword(userId, password);
     }
 }
