@@ -1,5 +1,6 @@
 package com.sclm.app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -35,9 +36,11 @@ public class Contact {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Builder.Default
     @OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmailAddress> emailAddresses = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PhoneNumber> phoneNumbers = new ArrayList<>();
 
