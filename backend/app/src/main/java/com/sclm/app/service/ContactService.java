@@ -17,7 +17,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 //@RequiredArgsConstructor
@@ -147,6 +149,15 @@ public class ContactService {
                 contact.getEmailAddresses().add(email);
             });
         }
+
+//        for (int i = 0; i < newContact.getEmailAddresses().size(); i++) {
+//            for (int j = 0; j < contact.getEmailAddresses().size(); j++) {
+//                if(contact.getEmailAddresses().get(j).getEmail().equals(newContact.getEmailAddresses().get(i).getEmail())) {
+//                    contact.getEmailAddresses().get(j).setEmail(newContact.getEmailAddresses().get(i).getEmail());
+//                    contact.getEmailAddresses().get(j).setType(newContact.getEmailAddresses().get(i).getType());
+//                }
+//            }
+//        }
 
         // Clear and update phone numbers
         contact.getPhoneNumbers().clear();
