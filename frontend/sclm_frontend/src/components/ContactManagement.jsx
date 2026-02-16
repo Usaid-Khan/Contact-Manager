@@ -7,6 +7,24 @@ import UpdateContactModal from './UpdateContactModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import Pagination from './Pagination';
 
+import { Users, LogOut } from 'lucide-react';
+import authService from '../services/authService';
+
+// Add this function inside the component
+const handleLogout = () => {
+  authService.logout();
+  navigate('/login');
+};
+
+// Add this button in the header action buttons section (after Create Contact button)
+<button
+  onClick={handleLogout}
+  className="group relative overflow-hidden flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 hover:shadow-2xl transition-all duration-300 font-semibold"
+>
+  <LogOut size={20} />
+  <span>Logout</span>
+</button>
+
 const ContactManagement = () => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
