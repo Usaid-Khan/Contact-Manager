@@ -25,13 +25,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
         return httpSecurity
                 .csrf(customizer -> customizer.disable())
+                .cors(cors -> cors.configure(httpSecurity))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/user/register", "/user/login").permitAll()
                         .anyRequest().authenticated())
-//                .formLogin(Customizer.withDefaults())
+                // .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                // .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

@@ -7,24 +7,6 @@ import UpdateContactModal from './UpdateContactModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import Pagination from './Pagination';
 
-import { Users, LogOut } from 'lucide-react';
-import authService from '../services/authService';
-
-// Add this function inside the component
-const handleLogout = () => {
-  authService.logout();
-  navigate('/login');
-};
-
-// Add this button in the header action buttons section (after Create Contact button)
-<button
-  onClick={handleLogout}
-  className="group relative overflow-hidden flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 hover:shadow-2xl transition-all duration-300 font-semibold"
->
-  <LogOut size={20} />
-  <span>Logout</span>
-</button>
-
 const ContactManagement = () => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +14,7 @@ const ContactManagement = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalContacts, setTotalContacts] = useState(0);
-  
+
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -51,7 +33,11 @@ const ContactManagement = () => {
         response = await contactAPI.getAllContacts(page, 9);
       }
 
-      const data = response.data.data;
+      console.log("FULL RESPONSE:", response);
+
+
+      const data = response.data;
+
       setContacts(data.content);
       setTotalPages(data.totalPages);
       setTotalContacts(data.totalElements);
@@ -117,7 +103,7 @@ const ContactManagement = () => {
       await contactAPI.deleteContact(selectedContact.id);
       setShowDeleteModal(false);
       setSelectedContact(null);
-      
+
       // If last item on page, go to previous page
       if (contacts.length === 1 && currentPage > 0) {
         fetchContacts(currentPage - 1, searchQuery);

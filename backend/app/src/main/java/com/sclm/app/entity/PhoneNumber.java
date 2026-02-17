@@ -24,5 +24,6 @@ public class PhoneNumber {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_id")
+    @JsonIgnore
     private Contact contact;
 }
