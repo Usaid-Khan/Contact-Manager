@@ -9,7 +9,7 @@ const ContactCard = ({ contact, onEdit, onDelete }) => {
         <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
           <div className="w-24 h-24 rounded-full bg-white border-4 border-white shadow-lg flex items-center justify-center">
             <span className="text-3xl font-bold text-gray-700">
-              {contact.firstName[0]}{contact.lastName[0]}
+              {contact.firstName?.[0] || ''}{contact.lastName?.[0] || ''}
             </span>
           </div>
         </div>
@@ -21,7 +21,7 @@ const ContactCard = ({ contact, onEdit, onDelete }) => {
         <h3 className="text-xl font-bold text-gray-800 text-center mb-1">
           {contact.firstName} {contact.lastName}
         </h3>
-        
+
         {/* Title */}
         {contact.title && (
           <div className="flex items-center justify-center gap-2 text-gray-500 mb-4">

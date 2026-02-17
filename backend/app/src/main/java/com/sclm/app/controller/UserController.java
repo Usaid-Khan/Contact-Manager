@@ -19,9 +19,14 @@ public class UserController {
         return userService.registerUser(user);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User user) {
-        return userService.verifyUser(user);
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody User user) {
+//        return userService.verifyUser(user);
+//    }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Authenticated");
     }
 
     @PutMapping("/change-password/{userId}/{password}")

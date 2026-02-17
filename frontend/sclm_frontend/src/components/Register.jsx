@@ -55,7 +55,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setLoading(true);
@@ -64,7 +64,7 @@ const Register = () => {
     try {
       const { confirmPassword, ...registerData } = formData;
       const response = await authService.register(registerData);
-      
+
       if (response.success) {
         // Redirect to contacts page
         navigate('/contacts');
@@ -119,7 +119,7 @@ const Register = () => {
               </h1>
             </div>
           </div>
-          
+
           <p className="text-xl text-gray-600 max-w-md">
             Create your account and start managing your contacts efficiently with powerful features.
           </p>
@@ -163,7 +163,7 @@ const Register = () => {
           <div className="relative group">
             {/* Glow Effect */}
             <div className="absolute -inset-1 bg-gradient-to-r from-gray-600 via-gray-900 to-blue-600 rounded-3xl blur-lg opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-            
+
             {/* Card */}
             <div className="relative bg-gray-400 rounded-3xl shadow-2xl p-8 lg:p-10 w-full lg:w-[480px]">
               {/* Header */}
@@ -251,7 +251,7 @@ const Register = () => {
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                   </div>
-                  
+
                   {/* Password Strength Indicator */}
                   {formData.password && (
                     <div className="mt-2">
@@ -259,9 +259,8 @@ const Register = () => {
                         {[...Array(5)].map((_, i) => (
                           <div
                             key={i}
-                            className={`h-1 flex-1 rounded-full transition-all ${
-                              i < passwordStrength ? getPasswordStrengthColor() : 'bg-gray-200'
-                            }`}
+                            className={`h-1 flex-1 rounded-full transition-all ${i < passwordStrength ? getPasswordStrengthColor() : 'bg-gray-200'
+                              }`}
                           ></div>
                         ))}
                       </div>

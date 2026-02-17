@@ -21,8 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
 @Service
-//@RequiredArgsConstructor
+// @RequiredArgsConstructor
 public class ContactService {
     @Autowired
     private ContactRepository contactRepository;
@@ -44,7 +45,7 @@ public class ContactService {
                 .build();
 
         // Add email addresses
-        if(contact.getEmailAddresses() != null) {
+        if (contact.getEmailAddresses() != null) {
             contact.getEmailAddresses().forEach(singleEmail -> {
                 EmailAddress email = EmailAddress.builder()
                         .email(singleEmail.getEmail())
@@ -57,7 +58,7 @@ public class ContactService {
         }
 
         // Add phone numbers
-        if(contact.getPhoneNumbers() != null) {
+        if (contact.getPhoneNumbers() != null) {
             contact.getPhoneNumbers().forEach(singlePhone -> {
                 PhoneNumber phone = PhoneNumber.builder()
                         .number(singlePhone.getNumber())
@@ -81,7 +82,7 @@ public class ContactService {
 
         Page<Contact> contacts = contactRepository.findByUserId(user.getId(), pageable);
 
-        if(contacts.getNumberOfElements() == 0) {
+        if (contacts.getNumberOfElements() == 0) {
             return new ResponseEntity<>("You don't have any contacts yet", HttpStatus.NOT_FOUND);
         }
 
@@ -104,7 +105,7 @@ public class ContactService {
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
 
         // Check if contact belongs to user
-        if(!contact.getUser().getId().equals(currentUser.getId())) {
+        if (!contact.getUser().getId().equals(currentUser.getId())) {
             throw new RuntimeException("You don't have permission to access this contact");
         }
 
@@ -121,24 +122,24 @@ public class ContactService {
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
 
         // Check ownership
-        if(!contact.getUser().getId().equals(currentUser.getId())) {
+        if (!contact.getUser().getId().equals(currentUser.getId())) {
             throw new RuntimeException("You don't have permission to update this contact");
         }
 
         // Update basic fields
-        if(newContact.getFirstName() != null) {
+        if (newContact.getFirstName() != null) {
             contact.setFirstName(newContact.getFirstName());
         }
-        if(newContact.getLastName() != null) {
+        if (newContact.getLastName() != null) {
             contact.setLastName(newContact.getLastName());
         }
-        if(newContact.getTitle() != null) {
+        if (newContact.getTitle() != null) {
             contact.setTitle(newContact.getTitle());
         }
 
         // Clear and update email addresses
         contact.getEmailAddresses().clear();
-        if(newContact.getEmailAddresses() != null) {
+        if (newContact.getEmailAddresses() != null) {
             newContact.getEmailAddresses().forEach(singleEmail -> {
                 EmailAddress email = EmailAddress.builder()
                         .email(singleEmail.getEmail())
@@ -150,18 +151,19 @@ public class ContactService {
             });
         }
 
-//        for (int i = 0; i < newContact.getEmailAddresses().size(); i++) {
-//            for (int j = 0; j < contact.getEmailAddresses().size(); j++) {
-//                if(contact.getEmailAddresses().get(j).getEmail().equals(newContact.getEmailAddresses().get(i).getEmail())) {
-//                    contact.getEmailAddresses().get(j).setEmail(newContact.getEmailAddresses().get(i).getEmail());
-//                    contact.getEmailAddresses().get(j).setType(newContact.getEmailAddresses().get(i).getType());
-//                }
-//            }
-//        }
+        // for (int i = 0; i < newContact.getEmailAddresses().size(); i++) {
+        // for (int j = 0; j < contact.getEmailAddresses().size(); j++) {
+        // if(contact.getEmailAddresses().get(j).getEmail().equals(newContact.getEmailAddresses().get(i).getEmail()))
+        // {
+        // contact.getEmailAddresses().get(j).setEmail(newContact.getEmailAddresses().get(i).getEmail());
+        // contact.getEmailAddresses().get(j).setType(newContact.getEmailAddresses().get(i).getType());
+        // }
+        // }
+        // }
 
         // Clear and update phone numbers
         contact.getPhoneNumbers().clear();
-        if(newContact.getPhoneNumbers() != null) {
+        if (newContact.getPhoneNumbers() != null) {
             newContact.getPhoneNumbers().forEach(singlePhone -> {
                 PhoneNumber phone = PhoneNumber.builder()
                         .number(singlePhone.getNumber())
@@ -205,7 +207,7 @@ public class ContactService {
 
         Page<Contact> contacts = contactRepository.searchContacts(currentUser.getId(), searchTerm, pageable);
 
-        if(contacts.getNumberOfElements() == 0) {
+        if (contacts.getNumberOfElements() == 0) {
             return new ResponseEntity<>("No such contact exists", HttpStatus.NOT_FOUND);
         }
 
