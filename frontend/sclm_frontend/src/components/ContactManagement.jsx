@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Loader } from 'lucide-react';
+import { Search, Plus, Loader, LogOut } from 'lucide-react';
 import { contactAPI } from '../services/api';
 import ContactCard from './ContactCard';
 import CreateContactModal from './CreateContactModal';
 import UpdateContactModal from './UpdateContactModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import Pagination from './Pagination';
+import { useNavigate } from 'react-router-dom';
+import authService from '../services/authService';
 
 const ContactManagement = () => {
   const [contacts, setContacts] = useState([]);
@@ -21,6 +23,13 @@ const ContactManagement = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/login');
+  };
 
   // Fetch contacts
   const fetchContacts = async (page = 0, query = '') => {
@@ -147,6 +156,13 @@ const ContactManagement = () => {
             >
               <Plus size={20} />
               Create Contact
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-6 py-3 bg-black text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg font-semibold"
+            >
+              <LogOut size={20} />
+              Logout
             </button>
           </div>
         </div>
