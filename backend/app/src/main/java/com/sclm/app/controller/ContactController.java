@@ -1,10 +1,15 @@
 package com.sclm.app.controller;
 
+import com.sclm.app.dto.ApiResponse;
+import com.sclm.app.dto.ContactResponse;
 import com.sclm.app.entity.Contact;
 import com.sclm.app.service.ContactService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/contacts")
+@Slf4j
 public class ContactController {
     @Autowired
     private ContactService contactService;
@@ -25,9 +31,19 @@ public class ContactController {
     }
 
     @GetMapping("/all-contacts")
-    public ResponseEntity<?> getAllContactsOfUser(Pageable pageable) {
+    public ResponseEntity<ApiResponse> getAllContactsOfUser(@RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "10") int size,
+                                                  @RequestParam(defaultValue = "firstName") String sortBy,
+                                                  @RequestParam(defaultValue = "asc") String sortDir) {
+        log.info("Fetching all contacts - Page: {}, Size: {}", page, size);
+        Sort sort = sortDir.contentEquals("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return contactService.getAllContacts(auth.getName(), pageable);
+        Page<ContactResponse> contacts = contactService.getAllContacts(auth.getName(), pageable);
+
+        ApiResponse response = new ApiResponse(true, "Contacts fetched successfully", contacts);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{contactId}")

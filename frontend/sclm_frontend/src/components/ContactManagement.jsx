@@ -33,15 +33,15 @@ const ContactManagement = () => {
         response = await contactAPI.getAllContacts(page, 9);
       }
 
-      console.log("FULL RESPONSE:", response);
+      console.log("RAW RESPONSE:", response.data);
+      console.log("PAGE DATA:", response.data.data);
 
+      const pageData = response.data?.data || response.data;
 
-      const data = response.data;
-
-      setContacts(data.content);
-      setTotalPages(data.totalPages);
-      setTotalContacts(data.totalElements);
-      setCurrentPage(data.number);
+      setContacts(pageData.content || []);
+      setTotalPages(pageData.totalPages || 0);
+      setTotalContacts(pageData.totalElements || 0);
+      setCurrentPage(pageData.number || 0);
     } catch (error) {
       console.error('Error fetching contacts:', error);
       if (error.response?.status === 401) {
@@ -137,7 +137,7 @@ const ContactManagement = () => {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Contact Management System</h1>
-              <p className="text-gray-600 mt-3">
+              <p className="text-gray-800 mt-3">
                 {totalContacts} {totalContacts === 1 ? 'contact' : 'contacts'} total
               </p>
             </div>

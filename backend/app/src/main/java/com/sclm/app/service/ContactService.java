@@ -1,11 +1,13 @@
 package com.sclm.app.service;
 
+import com.sclm.app.dto.ContactResponse;
 import com.sclm.app.entity.Contact;
 import com.sclm.app.entity.EmailAddress;
 import com.sclm.app.entity.PhoneNumber;
 import com.sclm.app.entity.User;
 import com.sclm.app.repository.ContactRepository;
 import com.sclm.app.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 
 @Service
-// @RequiredArgsConstructor
+@Slf4j
 public class ContactService {
     @Autowired
     private ContactRepository contactRepository;
@@ -76,17 +79,20 @@ public class ContactService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getAllContacts(String userMail, Pageable pageable) {
+    public Page<ContactResponse> getAllContacts(String userMail, Pageable pageable) {
         User user = userRepository.findByEmail(userMail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not exists"));
+
+        log.debug("Fetching all contacts for user ID: {} with pagination", user.getId());
 
         Page<Contact> contacts = contactRepository.findByUserId(user.getId(), pageable);
 
         if (contacts.getNumberOfElements() == 0) {
-            return new ResponseEntity<>("You don't have any contacts yet", HttpStatus.NOT_FOUND);
+            System.out.println("This user doesn't have any contact");
+            return contacts.map(this::mapToContactResponse);
         }
 
-        return new ResponseEntity<>(contacts, HttpStatus.FOUND);
+        return contacts.map(this::mapToContactResponse);
     }
 
     @Transactional(readOnly = true)
@@ -212,5 +218,31 @@ public class ContactService {
         }
 
         return new ResponseEntity<>(contacts, HttpStatus.FOUND);
+    }
+
+    // Helper method to map Contact entity to ContactResponse DTO
+    private ContactResponse mapToContactResponse(Contact contact) {
+        return ContactResponse.builder()
+                .id(contact.getId())
+                .firstName(contact.getFirstName())
+                .lastName(contact.getLastName())
+                .title(contact.getTitle())
+                .emailAddresses(contact.getEmailAddresses().stream()
+                        .map(email -> ContactResponse.EmailAddressDto.builder()
+                                .id(email.getId())
+                                .email(email.getEmail())
+                                .type(email.getType())
+                                .build())
+                        .collect(Collectors.toList()))
+                .phoneNumbers(contact.getPhoneNumbers().stream()
+                        .map(phone -> ContactResponse.PhoneNumberDto.builder()
+                                .id(phone.getId())
+                                .number(phone.getNumber())
+                                .type(phone.getType())
+                                .build())
+                        .collect(Collectors.toList()))
+                .createdAt(contact.getCreatedAt())
+                .updatedAt(contact.getUpdatedAt())
+                .build();
     }
 }
