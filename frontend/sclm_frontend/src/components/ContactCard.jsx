@@ -70,14 +70,14 @@ const ContactCard = ({ contact, onEdit, onDelete }) => {
         <div className="flex gap-2 mt-6">
           <button
             onClick={() => onEdit(contact)}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors duration-200 font-medium"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bgGray bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors duration-200 font-medium"
           >
             <Edit2 size={16} />
             Edit
           </button>
           <button
             onClick={() => onDelete(contact)}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors duration-200 font-medium"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bgGray bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors duration-200 font-medium"
           >
             <Trash2 size={16} />
             Delete

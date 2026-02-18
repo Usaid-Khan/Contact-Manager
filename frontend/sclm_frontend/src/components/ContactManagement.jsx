@@ -159,7 +159,7 @@ const ContactManagement = () => {
             </button>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-6 py-3 bg-black text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg font-semibold"
+              className="flex items-center gap-2 px-6 py-3 bgColor text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg font-semibold"
             >
               <LogOut size={20} />
               Logout
@@ -179,7 +179,7 @@ const ContactManagement = () => {
               placeholder="Search by name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
+              className="w-full pl-10 pr-4 py-3 border text-gray-300 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
             />
           </div>
         </div>
