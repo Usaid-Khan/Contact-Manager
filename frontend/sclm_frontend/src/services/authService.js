@@ -31,6 +31,18 @@ const authService = {
       };
 
       localStorage.setItem('credentials', JSON.stringify(authCredentials));
+
+      // Fetch and store user profile
+      try {
+        const profileResponse = await axios.get(`${API_BASE_URL}/profile`, {
+          headers: {
+            Authorization: `Basic ${token}`,
+          },
+        });
+        localStorage.setItem('user', JSON.stringify(profileResponse.data));
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
     }
 
     return response;
@@ -39,11 +51,39 @@ const authService = {
   // Logout user
   logout: () => {
     localStorage.removeItem('credentials');
+    localStorage.removeItem('user');
   },
 
   // Check if user is authenticated
   isAuthenticated: () => {
     return !!localStorage.getItem('credentials');
+  },
+
+  getCurrentUser: () => {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  },
+
+  // Fetch fresh user data from backend
+  fetchUserProfile: async () => {
+    try {
+      const credentials = authService.getCredentials();
+      if (!credentials) return null;
+
+      const token = btoa(`${credentials.email}:${credentials.password}`);
+      const response = await axios.get(`${API_BASE_URL}/profile`, {
+        headers: {
+          Authorization: `Basic ${token}`,
+        },
+      });
+
+      // Update localStorage
+      localStorage.setItem('user', JSON.stringify(response.data));
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
+    }
   },
 
   // Get stored credentials
