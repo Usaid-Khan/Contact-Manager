@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Loader, LogOut } from 'lucide-react';
+import { Search, Plus, Loader, LogOut, User } from 'lucide-react';
 import { contactAPI } from '../services/api';
 import ContactCard from './ContactCard';
 import CreateContactModal from './CreateContactModal';
@@ -156,6 +156,13 @@ const ContactManagement = () => {
             >
               <Plus size={20} />
               Create Contact
+            </button>
+            <button
+              onClick={() => navigate('/profile')}
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-xl hover:from-blue-600 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl font-semibold"
+            >
+              <User size={20} />
+              Profile
             </button>
             <button
               onClick={handleLogout}

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './components/Login';
 import Register from './components/Register';
 import ContactManagement from './components/ContactManagement';
+import UserProfile from './components/UserProfile';
 import authService from './services/authService';
 
 // Protected Route Component
@@ -11,7 +12,7 @@ const ProtectedRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
-// Public Route Component (redirect to contacts if already logged in)
+// Public Route Component
 const PublicRoute = ({ children }) => {
   const isAuthenticated = authService.isAuthenticated();
   return !isAuthenticated ? children : <Navigate to="/contacts" />;
@@ -45,6 +46,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ContactManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <UserProfile />
             </ProtectedRoute>
           }
         />

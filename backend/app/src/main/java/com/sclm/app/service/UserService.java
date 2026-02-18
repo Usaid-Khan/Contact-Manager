@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,14 +68,11 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<?> changePassword(Long userId, String newPassword) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public ResponseEntity<?> changePassword(String newPassword) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        // Check if userId belongs to user
-        if(!user.getId().equals(userId)) {
-            return new ResponseEntity<>("You don't have permission to access this account", HttpStatus.FORBIDDEN);
-        }
+        User user = userRepository.findByEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         user.setPassword(newPassword);
         userRepository.save(user);
@@ -85,5 +83,28 @@ public class UserService {
     public User findById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public int getContactCount(User user) {
+        int size = user.getContacts().size();
+        return size;
+    }
+
+    public boolean verifyPassword(User user, String rawPassword) {
+        if(rawPassword.equals(user.getPassword())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void updatePassword(User user, String newPassword) {
+        user.setPassword(newPassword);
+        userRepository.save(user);
     }
 }
