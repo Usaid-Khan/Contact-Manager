@@ -82,7 +82,7 @@ const CreateContactModal = ({ isOpen, onClose, onSave }) => {
           <h2 className="text-2xl font-bold">Create New Contact</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/20 rounded-full transition-colors"
+            className="p-2 hover:bg-white/20 rounded-full transition-colors bgColor"
           >
             <X size={24} />
           </button>
@@ -154,7 +154,7 @@ const CreateContactModal = ({ isOpen, onClose, onSave }) => {
               <button
                 type="button"
                 onClick={addEmail}
-                className="flex items-center gap-2 px-3 py-1.5 bg-gray-900 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-3 py-1.5 bgGray bg-gray-900 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"
               >
                 <Plus size={16} />
                 Add Email
@@ -173,7 +173,7 @@ const CreateContactModal = ({ isOpen, onClose, onSave }) => {
                 <select
                   value={email.type}
                   onChange={(e) => handleEmailChange(index, 'type', e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 bg-black focus:ring-blue-900 focus:border-transparent outline-none transition-all"
+                  className="px-4 py-2 border text-gray-500 border-gray-300 rounded-lg focus:ring-2 bg-black focus:ring-blue-900 focus:border-transparent outline-none transition-all"
                 >
                   <option value="WORK">Work</option>
                   <option value="PERSONAL">Personal</option>
@@ -202,7 +202,7 @@ const CreateContactModal = ({ isOpen, onClose, onSave }) => {
               <button
                 type="button"
                 onClick={addPhone}
-                className="flex items-center gap-2 px-3 py-1.5 bg-gray-900 text-green-600 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-3 py-1.5 bgGray text-green-600 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium"
               >
                 <Plus size={16} />
                 Add Phone
@@ -221,7 +221,7 @@ const CreateContactModal = ({ isOpen, onClose, onSave }) => {
                 <select
                   value={phone.type}
                   onChange={(e) => handlePhoneChange(index, 'type', e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 bg-black focus:ring-blue-950 focus:border-transparent outline-none transition-all"
+                  className="px-4 py-2 border text-gray-500 border-gray-300 rounded-lg focus:ring-2 bg-black focus:ring-blue-950 focus:border-transparent outline-none transition-all"
                 >
                   <option value="WORK">Work</option>
                   <option value="HOME">Home</option>
@@ -246,7 +246,7 @@ const CreateContactModal = ({ isOpen, onClose, onSave }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 border border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              className="flex-1 px-6 py-3 border bgGray border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors font-medium"
             >
               Cancel
             </button>
