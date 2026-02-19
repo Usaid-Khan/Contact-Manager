@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,27 +21,30 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Transactional
     public ResponseEntity<?> registerUser(User user) {
         // Check if email already exists
+        System.out.println("before email check");
         if(userRepository.existsByEmail(user.getEmail())) {
             System.out.println("Email already in use");
             return new ResponseEntity<>("Email already in use", HttpStatus.ALREADY_REPORTED);
         }
-
-        // Check if phone number already exists (if provided)
-        if(user.getPhoneNumber() != null && userRepository.existsByPhoneNumber(user.getPhoneNumber())) {
-            System.out.println("Phone number already exists");
-            return new ResponseEntity<>("Phone Number already exists", HttpStatus.ALREADY_REPORTED);
-        }
+        System.out.println("after email check");
 
         // Create new user
+        System.out.println("before creating user");
         User newUser = User.builder()
                 .email(user.getEmail())
-                .phoneNumber(user.getPhoneNumber())
-                .password(user.getPassword())
+                .phoneNumber(
+                        (user.getPhoneNumber() == null || user.getPhoneNumber().isBlank())
+                                ? null
+                                : user.getPhoneNumber()
+                )
+                .password(encoder.encode(user.getPassword()))
                 .build();
+        System.out.println("after creating user");
 
         userRepository.save(newUser);
 
@@ -53,18 +57,12 @@ public class UserService {
             User userInDB = userRepository.findByEmail(user.getEmail())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-            if(userInDB.getPassword().equals(user.getPassword())) {
+            if(encoder.matches(user.getPassword(), userInDB.getPassword())) {
                 System.out.println("Successfully logged in");
                 return new ResponseEntity<>("User is successfully logged in", HttpStatus.OK);
             }
         }
         return new ResponseEntity<>("User is not found", HttpStatus.NOT_FOUND);
-
-//        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-//        if(authentication.isAuthenticated())
-//            return jwtService.generateToken(user.getUsername());
-//        return "Fail";
-//        return new ResponseEntity<>("Successfully logged in", HttpStatus.OK);
     }
 
     @Transactional
@@ -96,7 +94,7 @@ public class UserService {
     }
 
     public boolean verifyPassword(User user, String rawPassword) {
-        if(rawPassword.equals(user.getPassword())) {
+        if(encoder.matches(user.getPassword(), rawPassword)) {
             return true;
         } else {
             return false;
@@ -104,7 +102,7 @@ public class UserService {
     }
 
     public void updatePassword(User user, String newPassword) {
-        user.setPassword(newPassword);
+        user.setPassword(encoder.encode(newPassword));
         userRepository.save(user);
     }
 }
