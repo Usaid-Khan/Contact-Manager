@@ -55,7 +55,6 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     setLoading(true);
@@ -63,11 +62,13 @@ const Register = () => {
 
     try {
       const { confirmPassword, ...registerData } = formData;
+      // Convert empty phone number to null
+      if (!registerData.phoneNumber || registerData.phoneNumber.trim() === '') {
+        registerData.phoneNumber = null;
+      }
       const response = await authService.register(registerData);
-
-      if (response.success) {
-        // Redirect to contacts page
-        navigate('/contacts');
+      if (response) {
+        navigate('/login');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
